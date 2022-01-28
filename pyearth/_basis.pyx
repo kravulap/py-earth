@@ -478,7 +478,7 @@ cdef class DataVariableBasisFunction(VariableBasisFunction):
     
     cpdef apply(DataVariableBasisFunction self, cnp.ndarray[FLOAT_t, ndim=2] X,
                 cnp.ndarray[BOOL_t, ndim=2] missing,
-                cnp.ndarray[FLOAT_t, ndim=1] b, bint recurse=True):
+                cnp.ndarray[FLOAT_t, ndim=1] b, bint recurse=True, bool skip_missing=False):
         '''
         X - Data matrix
         missing - missingness matrix
@@ -497,6 +497,10 @@ cdef class DataVariableBasisFunction(VariableBasisFunction):
         for i in range(m):
             if not missing[i, self.variable]:
                 b[i] *= val[i]
+			else:
+				if skip_missing:
+					b[i] = 0 # kiran
+			
     
     cpdef apply_deriv(DataVariableBasisFunction self,
                       cnp.ndarray[FLOAT_t, ndim=2] X,
@@ -1063,12 +1067,13 @@ cdef class Basis:
 
     cpdef transform(Basis self, cnp.ndarray[FLOAT_t, ndim=2] X,
                     cnp.ndarray[BOOL_t, ndim=2] missing,
-                    cnp.ndarray[FLOAT_t, ndim=2] B):
+                    cnp.ndarray[FLOAT_t, ndim=2] B,
+					bool skip_missing = False):
         cdef BasisFunction bf
         cdef INDEX_t col = 0
         for bf in self.order:
             if not bf.is_pruned():
-                bf.apply(X, missing, B[:, col], recurse=True)
+                bf.apply(X, missing, B[:, col], recurse=True, skip_missing)
                 col += 1
 
     cpdef weighted_transform(Basis self, cnp.ndarray[FLOAT_t, ndim=2] X,
