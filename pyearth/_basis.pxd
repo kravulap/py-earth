@@ -50,7 +50,7 @@ cdef class BasisFunction:
 
     cpdef apply(BasisFunction self, cnp.ndarray[FLOAT_t, ndim=2] X,
                 cnp.ndarray[BOOL_t, ndim=2] missing,
-                cnp.ndarray[FLOAT_t, ndim=1] b, bint recurse= ?)
+                cnp.ndarray[FLOAT_t, ndim=1] b, bint recurse= ?, bool skip_missing=False)
 
     cpdef cnp.ndarray[INT_t, ndim = 1] valid_knots(BasisFunction self,
         cnp.ndarray[FLOAT_t, ndim=1] values,
